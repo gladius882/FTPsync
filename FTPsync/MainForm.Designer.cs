@@ -13,13 +13,10 @@ namespace FTPsync
 		/// Designer variable used to keep track of non-visual components.
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
-		private System.Windows.Forms.MenuStrip menuStrip1;
 		private System.Windows.Forms.TabControl tabControl;
 		private System.Windows.Forms.TabPage tabStatus;
 		private System.Windows.Forms.TextBox textBoxStatus;
 		private System.Windows.Forms.TabPage tabConfig;
-		private System.Windows.Forms.ToolStripMenuItem fTPToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel statusStrip;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -29,8 +26,6 @@ namespace FTPsync
 		private System.Windows.Forms.TextBox FTPHost;
 		private System.Windows.Forms.TabPage tabLog;
 		private System.Windows.Forms.TextBox textBoxLog;
-		private System.Windows.Forms.Button buttonDisconnect;
-		private System.Windows.Forms.Button buttonConnect;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Button buttonSelectLocalFolder;
 		private System.Windows.Forms.TextBox TextBoxRemoteFolder;
@@ -38,6 +33,10 @@ namespace FTPsync
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Button buttonSave;
+		private System.Windows.Forms.ToolStripMenuItem fTPToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
+		private System.Windows.Forms.MenuStrip menuStrip1;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -60,9 +59,6 @@ namespace FTPsync
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-			this.fTPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl = new System.Windows.Forms.TabControl();
 			this.tabStatus = new System.Windows.Forms.TabPage();
 			this.textBoxStatus = new System.Windows.Forms.TextBox();
@@ -77,15 +73,16 @@ namespace FTPsync
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.buttonDisconnect = new System.Windows.Forms.Button();
-			this.buttonConnect = new System.Windows.Forms.Button();
+			this.buttonSave = new System.Windows.Forms.Button();
 			this.FTPPort = new System.Windows.Forms.NumericUpDown();
 			this.FTPPassword = new System.Windows.Forms.TextBox();
 			this.FTPUser = new System.Windows.Forms.TextBox();
 			this.FTPHost = new System.Windows.Forms.TextBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.statusStrip = new System.Windows.Forms.ToolStripStatusLabel();
-			this.menuStrip1.SuspendLayout();
+			this.fTPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.tabControl.SuspendLayout();
 			this.tabStatus.SuspendLayout();
 			this.tabLog.SuspendLayout();
@@ -94,32 +91,8 @@ namespace FTPsync
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.FTPPort)).BeginInit();
 			this.statusStrip1.SuspendLayout();
+			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// menuStrip1
-			// 
-			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.fTPToolStripMenuItem});
-			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(479, 24);
-			this.menuStrip1.TabIndex = 0;
-			this.menuStrip1.Text = "menuStrip1";
-			// 
-			// fTPToolStripMenuItem
-			// 
-			this.fTPToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.connectToolStripMenuItem});
-			this.fTPToolStripMenuItem.Name = "fTPToolStripMenuItem";
-			this.fTPToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-			this.fTPToolStripMenuItem.Text = "FTP";
-			// 
-			// connectToolStripMenuItem
-			// 
-			this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
-			this.connectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.connectToolStripMenuItem.Text = "Sync";
-			this.connectToolStripMenuItem.Click += new System.EventHandler(this.ConnectToolStripMenuItemClick);
 			// 
 			// tabControl
 			// 
@@ -154,7 +127,7 @@ namespace FTPsync
 			this.textBoxStatus.Name = "textBoxStatus";
 			this.textBoxStatus.Size = new System.Drawing.Size(465, 208);
 			this.textBoxStatus.TabIndex = 0;
-			this.textBoxStatus.Text = "file1\r\nfile2\r\nfile3";
+			this.textBoxStatus.Text = "Please turn on sync to start watching changes in files";
 			// 
 			// tabLog
 			// 
@@ -252,8 +225,7 @@ namespace FTPsync
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.Add(this.buttonDisconnect);
-			this.groupBox1.Controls.Add(this.buttonConnect);
+			this.groupBox1.Controls.Add(this.buttonSave);
 			this.groupBox1.Controls.Add(this.FTPPort);
 			this.groupBox1.Controls.Add(this.FTPPassword);
 			this.groupBox1.Controls.Add(this.FTPUser);
@@ -265,23 +237,15 @@ namespace FTPsync
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "FTP connection";
 			// 
-			// buttonDisconnect
+			// buttonSave
 			// 
-			this.buttonDisconnect.Location = new System.Drawing.Point(106, 140);
-			this.buttonDisconnect.Name = "buttonDisconnect";
-			this.buttonDisconnect.Size = new System.Drawing.Size(87, 23);
-			this.buttonDisconnect.TabIndex = 4;
-			this.buttonDisconnect.Text = "Dicsonnect";
-			this.buttonDisconnect.UseVisualStyleBackColor = true;
-			// 
-			// buttonConnect
-			// 
-			this.buttonConnect.Location = new System.Drawing.Point(6, 140);
-			this.buttonConnect.Name = "buttonConnect";
-			this.buttonConnect.Size = new System.Drawing.Size(85, 23);
-			this.buttonConnect.TabIndex = 4;
-			this.buttonConnect.Text = "Connect";
-			this.buttonConnect.UseVisualStyleBackColor = true;
+			this.buttonSave.Location = new System.Drawing.Point(6, 140);
+			this.buttonSave.Name = "buttonSave";
+			this.buttonSave.Size = new System.Drawing.Size(75, 23);
+			this.buttonSave.TabIndex = 4;
+			this.buttonSave.Text = "Save";
+			this.buttonSave.UseVisualStyleBackColor = true;
+			this.buttonSave.Click += new System.EventHandler(this.ButtonSaveClick);
 			// 
 			// FTPPort
 			// 
@@ -301,7 +265,6 @@ namespace FTPsync
 			this.FTPPassword.Name = "FTPPassword";
 			this.FTPPassword.Size = new System.Drawing.Size(187, 20);
 			this.FTPPassword.TabIndex = 2;
-			this.FTPPassword.Text = "Legion12";
 			this.FTPPassword.UseSystemPasswordChar = true;
 			// 
 			// FTPUser
@@ -310,7 +273,6 @@ namespace FTPsync
 			this.FTPUser.Name = "FTPUser";
 			this.FTPUser.Size = new System.Drawing.Size(187, 20);
 			this.FTPUser.TabIndex = 1;
-			this.FTPUser.Text = "oldmanstudio";
 			// 
 			// FTPHost
 			// 
@@ -318,7 +280,6 @@ namespace FTPsync
 			this.FTPHost.Name = "FTPHost";
 			this.FTPHost.Size = new System.Drawing.Size(187, 20);
 			this.FTPHost.TabIndex = 0;
-			this.FTPHost.Text = "oldmanstudio.cba.pl";
 			// 
 			// statusStrip1
 			// 
@@ -336,6 +297,31 @@ namespace FTPsync
 			this.statusStrip.Size = new System.Drawing.Size(79, 17);
 			this.statusStrip.Text = "Disconnected";
 			// 
+			// fTPToolStripMenuItem
+			// 
+			this.fTPToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.connectToolStripMenuItem});
+			this.fTPToolStripMenuItem.Name = "fTPToolStripMenuItem";
+			this.fTPToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
+			this.fTPToolStripMenuItem.Text = "Program";
+			// 
+			// connectToolStripMenuItem
+			// 
+			this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
+			this.connectToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
+			this.connectToolStripMenuItem.Text = "Sync";
+			this.connectToolStripMenuItem.Click += new System.EventHandler(this.ConnectToolStripMenuItemClick);
+			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.fTPToolStripMenuItem});
+			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+			this.menuStrip1.Name = "menuStrip1";
+			this.menuStrip1.Size = new System.Drawing.Size(479, 24);
+			this.menuStrip1.TabIndex = 0;
+			this.menuStrip1.Text = "menuStrip1";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -347,8 +333,6 @@ namespace FTPsync
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "FTPsync";
-			this.menuStrip1.ResumeLayout(false);
-			this.menuStrip1.PerformLayout();
 			this.tabControl.ResumeLayout(false);
 			this.tabStatus.ResumeLayout(false);
 			this.tabStatus.PerformLayout();
@@ -362,6 +346,8 @@ namespace FTPsync
 			((System.ComponentModel.ISupportInitialize)(this.FTPPort)).EndInit();
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
+			this.menuStrip1.ResumeLayout(false);
+			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
