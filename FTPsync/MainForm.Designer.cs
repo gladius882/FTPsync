@@ -37,6 +37,7 @@ namespace FTPsync
 		private System.Windows.Forms.ToolStripMenuItem fTPToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
 		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.CheckBox checkBoxAutoSync;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -66,6 +67,7 @@ namespace FTPsync
 			this.textBoxLog = new System.Windows.Forms.TextBox();
 			this.tabConfig = new System.Windows.Forms.TabPage();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.checkBoxAutoSync = new System.Windows.Forms.CheckBox();
 			this.buttonSelectLocalFolder = new System.Windows.Forms.Button();
 			this.TextBoxRemoteFolder = new System.Windows.Forms.TextBox();
 			this.textBoxLocalFolder = new System.Windows.Forms.TextBox();
@@ -162,6 +164,7 @@ namespace FTPsync
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.checkBoxAutoSync);
 			this.groupBox2.Controls.Add(this.buttonSelectLocalFolder);
 			this.groupBox2.Controls.Add(this.TextBoxRemoteFolder);
 			this.groupBox2.Controls.Add(this.textBoxLocalFolder);
@@ -174,6 +177,15 @@ namespace FTPsync
 			this.groupBox2.TabIndex = 1;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Settings";
+			// 
+			// checkBoxAutoSync
+			// 
+			this.checkBoxAutoSync.Location = new System.Drawing.Point(7, 125);
+			this.checkBoxAutoSync.Name = "checkBoxAutoSync";
+			this.checkBoxAutoSync.Size = new System.Drawing.Size(152, 24);
+			this.checkBoxAutoSync.TabIndex = 3;
+			this.checkBoxAutoSync.Text = "Turn on sync on start";
+			this.checkBoxAutoSync.UseVisualStyleBackColor = true;
 			// 
 			// buttonSelectLocalFolder
 			// 

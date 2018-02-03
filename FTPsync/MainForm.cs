@@ -21,14 +21,8 @@ namespace FTPsync
 	{
 		private FTP FTPConnection;
 		private Dictionary<string, string> options;
-		
-		private string host;
-		private int port;
-		private string user;
-		private string password;
-		
-		private string localFolder;
-		private string remoteFolder;
+		private List<string> localFiles = new List<string>();
+		private List<string> RemoteFiles = new List<string>();
 		
 		public MainForm()
 		{
@@ -43,6 +37,13 @@ namespace FTPsync
 			
 			textBoxLocalFolder.Text = options["localFolder"];
 			TextBoxRemoteFolder.Text = options["remoteFolder"];
+			checkBoxAutoSync.Checked = bool.Parse(options["autoSync"]);
+			
+			if(bool.Parse(options["autoSync"]) == true)
+			{
+				LoadLocalFiles(options["localFolder"]);
+			}
+			
 		}
 		
 		
@@ -58,7 +59,7 @@ namespace FTPsync
 		void ConnectToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			LoadFTPConnection();
-			FTPConnection = new FTP(@"ftp://"+host, user, password);
+			FTPConnection = new FTP(@"ftp://"+options["host"], options["user"], options["host"]);
 			
 		}
 		
@@ -66,10 +67,10 @@ namespace FTPsync
 		{
 			options["host"] = FTPHost.Text;
 			options["post"] = FTPPort.Value.ToString();
-			options["user"] = user = FTPUser.Text;
-			options["password"] = password = FTPPassword.Text;
-			options["localFolder"] = localFolder = textBoxLocalFolder.Text;
-			options["remoteFolder"] = remoteFolder = TextBoxRemoteFolder.Text;
+			options["user"] = FTPUser.Text;
+			options["password"] = FTPPassword.Text;
+			options["localFolder"] = textBoxLocalFolder.Text;
+			options["remoteFolder"] = TextBoxRemoteFolder.Text;
 		}
 		
 		void ButtonSaveClick(object sender, EventArgs e)
@@ -79,19 +80,43 @@ namespace FTPsync
 		
 		private void SaveFTPConnection()
 		{
-			File.WriteAllLines("settings.ini", new string[]
-			                   {
-			                   	"# FTP connection",
-			                   	"host:"+FTPHost.Text,
-			                   	"port:"+FTPPort.Value.ToString(),
-			                   	"user:"+FTPUser.Text,
-			                   	"password:"+FTPPassword.Text,
-			                   	"",
-			                   	"# settings",
-			                   	"localFolder:"+textBoxLocalFolder.Text.Replace(':', ';'),
-			                   	"remoteFolder:"+TextBoxRemoteFolder.Text.Replace(':', ';')
-			                   }
-			);
+			try {
+				File.WriteAllLines("settings.ini", new string[]
+				                   {
+				                   	"# FTP connection",
+				                   	"host:"+FTPHost.Text,
+				                   	"port:"+FTPPort.Value.ToString(),
+				                   	"user:"+FTPUser.Text,
+				                   	"password:"+FTPPassword.Text,
+				                   	"",
+				                   	"# settings",
+				                   	"localFolder:"+textBoxLocalFolder.Text.Replace(':', ';'),
+				                   	"remoteFolder:"+TextBoxRemoteFolder.Text.Replace(':', ';'),
+				                   	"autoSync:"+checkBoxAutoSync.Checked.ToString()
+				                   }
+				);
+				statusStrip.Text = "Succesfully saved settings";
+			}
+			catch(Exception ex) {
+				MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+		
+		private void LoadLocalFiles(string dir)
+		{
+			if(Directory.Exists(dir))
+			{
+				string[] files = Directory.GetFiles(dir);
+				foreach(string file in Directory.GetFiles(dir))
+				{
+					localFiles.Add(file);
+				}
+				string[] folders = Directory.GetDirectories(dir);
+				foreach(string folder in Directory.GetDirectories(dir))
+				{
+					LoadLocalFiles(folder);
+				}
+			}
 		}
 	}
 }
