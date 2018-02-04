@@ -4,5 +4,5 @@ C:\Users\gladius882\Documents\SharpDevelop Projects\FTPsync\FTPsync\bin\Debug\FT
 C:\Users\gladius882\Documents\SharpDevelop Projects\FTPsync\FTPsync\obj\Debug\FTPsync.csprojResolveAssemblyReference.cache
 C:\Users\gladius882\Documents\SharpDevelop Projects\FTPsync\FTPsync\obj\Debug\FTPsync.exe
 C:\Users\gladius882\Documents\SharpDevelop Projects\FTPsync\FTPsync\obj\Debug\FTPsync.pdb
-C:\Users\gladius882\Documents\SharpDevelop Projects\FTPsync\FTPsync\obj\Debug\FTPsync.MainForm.resources
 C:\Users\gladius882\Documents\SharpDevelop Projects\FTPsync\FTPsync\obj\Debug\FTPsync.csproj.GenerateResource.Cache
+C:\Users\gladius882\Documents\SharpDevelop Projects\FTPsync\FTPsync\obj\Debug\FTPsync.MainForm.resources

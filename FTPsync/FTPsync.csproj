@@ -50,6 +50,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Files.cs" />
     <Compile Include="FTP.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="MainForm.cs" />

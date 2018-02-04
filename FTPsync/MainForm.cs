@@ -8,21 +8,25 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.IO;
+using System.Text;
+using System.Threading;
 
 namespace FTPsync
 {
 	/// <summary>
 	/// Description of MainForm.
 	/// </summary>
+	delegate void StringArgReturningVoidDelegate(string text);
 	
 	public partial class MainForm : Form
 	{
 		private FTP FTPConnection;
 		private Dictionary<string, string> options;
-		private List<string> localFiles = new List<string>();
-		private List<string> RemoteFiles = new List<string>();
+		private List<LocalFile> localFiles = new List<LocalFile>();
+		private List<RemoteFile> remoteFiles = new List<RemoteFile>();
 		
 		public MainForm()
 		{
@@ -37,13 +41,7 @@ namespace FTPsync
 			
 			textBoxLocalFolder.Text = options["localFolder"];
 			TextBoxRemoteFolder.Text = options["remoteFolder"];
-			checkBoxAutoSync.Checked = bool.Parse(options["autoSync"]);
-			
-			if(bool.Parse(options["autoSync"]) == true)
-			{
-				LoadLocalFiles(options["localFolder"]);
-			}
-			
+			checkBoxAutoSync.Checked = bool.Parse(options["autoSync"]);		
 		}
 		
 		
@@ -54,13 +52,6 @@ namespace FTPsync
 			{
 				textBoxLocalFolder.Text = dialog.SelectedPath;
 			}
-		}
-		
-		void ConnectToolStripMenuItemClick(object sender, EventArgs e)
-		{
-			LoadFTPConnection();
-			FTPConnection = new FTP(@"ftp://"+options["host"], options["user"], options["host"]);
-			
 		}
 		
 		private void LoadFTPConnection()
@@ -106,16 +97,79 @@ namespace FTPsync
 		{
 			if(Directory.Exists(dir))
 			{
-				string[] files = Directory.GetFiles(dir);
-				foreach(string file in Directory.GetFiles(dir))
-				{
-					localFiles.Add(file);
+				foreach(string file in Directory.GetFiles(dir)) {
+					LocalFile localFile = new LocalFile();
+					localFile.fullPath = file;
+					localFile.fileName = file.Split('\\')[file.Split('\\').Length-1];
+					localFile.lastEdited = File.GetLastAccessTime(file);
+					
+					localFiles.Add(localFile);
 				}
-				string[] folders = Directory.GetDirectories(dir);
-				foreach(string folder in Directory.GetDirectories(dir))
-				{
+				
+				foreach(string folder in Directory.GetDirectories(dir)) {
 					LoadLocalFiles(folder);
 				}
+			}
+		}
+		
+		private void LoadRemoteFiles(string dir)
+		{
+			FTPConnection = new FTP("ftp://"+options["host"], options["user"], options["password"]);
+			
+			statusStrip.Text = "Analyzing "+dir;
+			
+			foreach(string el in FTPConnection.directoryListDetailed(dir))
+			{
+				if(el.Trim().StartsWith("-"))
+				{
+					Regex reg = new Regex("[ ]{2,}", RegexOptions.None);
+					string[] arr = reg.Replace(el, " ").Split(' ');
+					
+					RemoteFile file = new RemoteFile();
+					file.fileName = arr[8];
+					file.fullPath = dir+"/"+arr[8];
+					file.lastEdited = DateTime.Parse(arr[5]+" "+arr[6]+" "+arr[7]);
+					remoteFiles.Add(file);
+				}
+				else if(el.Trim().StartsWith("d"))
+				{
+					Regex reg = new Regex("[ ]{2,}", RegexOptions.None);
+					string[] arr = reg.Replace(el, " ").Split(' ');
+					if(arr[8] != "." && arr[8] != "..")
+						LoadRemoteFiles(dir+"/"+arr[8]);
+				}
+			}
+		}
+		
+		private void LoadFiles()
+		{
+			LoadLocalFiles(options["localFolder"]);
+			Log("Local files loaded("+localFiles.Count+")");
+			LoadRemoteFiles(options["remoteFolder"]);
+			Log("Remote files loaded("+remoteFiles.Count+")");
+		}
+		
+		void ToolStripTurnOnClick(object sender, EventArgs e)
+		{
+			Thread thread = new Thread(LoadFiles);
+			thread.Start();
+			
+			foreach(RemoteFile file in remoteFiles)
+			{
+				File.WriteAllLines("remote.txt", new string[] {file.fullPath+" "+file.lastEdited.ToString()});
+			}
+		}
+		
+		private void Log(string msg)
+		{
+			if(textBoxLog.InvokeRequired)
+			{
+				StringArgReturningVoidDelegate d = new StringArgReturningVoidDelegate(Log);  
+        		this.Invoke(d, new object[] { msg });  
+			}
+			else
+			{
+				textBoxLog.AppendText(msg + Environment.NewLine);
 			}
 		}
 	}
