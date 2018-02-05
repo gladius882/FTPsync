@@ -36,8 +36,10 @@ namespace FTPsync
 		private System.Windows.Forms.Button buttonSave;
 		private System.Windows.Forms.CheckBox checkBoxAutoSync;
 		private System.Windows.Forms.ToolStrip toolStrip1;
-		private System.Windows.Forms.ToolStripButton toolStripTurnOn;
-		private System.Windows.Forms.ToolStripButton toolStripTurnOff;
+		private System.Windows.Forms.ToolStripButton toolStripSwitchSync;
+		private System.Windows.Forms.TabPage tabHelp;
+		private System.Windows.Forms.RichTextBox richTextBox1;
+		private System.Windows.Forms.CheckBox checkBoxCache;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -68,6 +70,7 @@ namespace FTPsync
 			this.textBoxLog = new System.Windows.Forms.TextBox();
 			this.tabConfig = new System.Windows.Forms.TabPage();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.checkBoxCache = new System.Windows.Forms.CheckBox();
 			this.checkBoxAutoSync = new System.Windows.Forms.CheckBox();
 			this.buttonSelectLocalFolder = new System.Windows.Forms.Button();
 			this.TextBoxRemoteFolder = new System.Windows.Forms.TextBox();
@@ -81,11 +84,12 @@ namespace FTPsync
 			this.FTPPassword = new System.Windows.Forms.TextBox();
 			this.FTPUser = new System.Windows.Forms.TextBox();
 			this.FTPHost = new System.Windows.Forms.TextBox();
+			this.tabHelp = new System.Windows.Forms.TabPage();
+			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.statusStrip = new System.Windows.Forms.ToolStripStatusLabel();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-			this.toolStripTurnOn = new System.Windows.Forms.ToolStripButton();
-			this.toolStripTurnOff = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSwitchSync = new System.Windows.Forms.ToolStripButton();
 			this.tabControl.SuspendLayout();
 			this.tabStatus.SuspendLayout();
 			this.tabLog.SuspendLayout();
@@ -93,6 +97,7 @@ namespace FTPsync
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.FTPPort)).BeginInit();
+			this.tabHelp.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -102,10 +107,11 @@ namespace FTPsync
 			this.tabControl.Controls.Add(this.tabStatus);
 			this.tabControl.Controls.Add(this.tabLog);
 			this.tabControl.Controls.Add(this.tabConfig);
+			this.tabControl.Controls.Add(this.tabHelp);
 			this.tabControl.Location = new System.Drawing.Point(0, 28);
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
-			this.tabControl.Size = new System.Drawing.Size(479, 211);
+			this.tabControl.Size = new System.Drawing.Size(479, 237);
 			this.tabControl.TabIndex = 1;
 			// 
 			// tabStatus
@@ -117,7 +123,7 @@ namespace FTPsync
 			this.tabStatus.Location = new System.Drawing.Point(4, 22);
 			this.tabStatus.Name = "tabStatus";
 			this.tabStatus.Padding = new System.Windows.Forms.Padding(3);
-			this.tabStatus.Size = new System.Drawing.Size(471, 185);
+			this.tabStatus.Size = new System.Drawing.Size(471, 211);
 			this.tabStatus.TabIndex = 0;
 			this.tabStatus.Text = "Status";
 			// 
@@ -129,7 +135,7 @@ namespace FTPsync
 			this.textBoxStatus.Location = new System.Drawing.Point(3, 3);
 			this.textBoxStatus.Multiline = true;
 			this.textBoxStatus.Name = "textBoxStatus";
-			this.textBoxStatus.Size = new System.Drawing.Size(465, 179);
+			this.textBoxStatus.Size = new System.Drawing.Size(465, 205);
 			this.textBoxStatus.TabIndex = 0;
 			this.textBoxStatus.Text = "Please turn on sync to start watching changes in files";
 			// 
@@ -138,7 +144,7 @@ namespace FTPsync
 			this.tabLog.Controls.Add(this.textBoxLog);
 			this.tabLog.Location = new System.Drawing.Point(4, 22);
 			this.tabLog.Name = "tabLog";
-			this.tabLog.Size = new System.Drawing.Size(471, 185);
+			this.tabLog.Size = new System.Drawing.Size(471, 211);
 			this.tabLog.TabIndex = 2;
 			this.tabLog.Text = "Log";
 			this.tabLog.UseVisualStyleBackColor = true;
@@ -151,7 +157,7 @@ namespace FTPsync
 			this.textBoxLog.Location = new System.Drawing.Point(0, 0);
 			this.textBoxLog.Multiline = true;
 			this.textBoxLog.Name = "textBoxLog";
-			this.textBoxLog.Size = new System.Drawing.Size(471, 185);
+			this.textBoxLog.Size = new System.Drawing.Size(471, 211);
 			this.textBoxLog.TabIndex = 0;
 			// 
 			// tabConfig
@@ -160,13 +166,14 @@ namespace FTPsync
 			this.tabConfig.Controls.Add(this.groupBox1);
 			this.tabConfig.Location = new System.Drawing.Point(4, 22);
 			this.tabConfig.Name = "tabConfig";
-			this.tabConfig.Size = new System.Drawing.Size(471, 185);
+			this.tabConfig.Size = new System.Drawing.Size(471, 211);
 			this.tabConfig.TabIndex = 1;
 			this.tabConfig.Text = "Config";
 			this.tabConfig.UseVisualStyleBackColor = true;
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.checkBoxCache);
 			this.groupBox2.Controls.Add(this.checkBoxAutoSync);
 			this.groupBox2.Controls.Add(this.buttonSelectLocalFolder);
 			this.groupBox2.Controls.Add(this.TextBoxRemoteFolder);
@@ -176,10 +183,19 @@ namespace FTPsync
 			this.groupBox2.Controls.Add(this.label1);
 			this.groupBox2.Location = new System.Drawing.Point(214, 12);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(249, 169);
+			this.groupBox2.Size = new System.Drawing.Size(249, 187);
 			this.groupBox2.TabIndex = 1;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Settings";
+			// 
+			// checkBoxCache
+			// 
+			this.checkBoxCache.Location = new System.Drawing.Point(7, 156);
+			this.checkBoxCache.Name = "checkBoxCache";
+			this.checkBoxCache.Size = new System.Drawing.Size(104, 24);
+			this.checkBoxCache.TabIndex = 4;
+			this.checkBoxCache.Text = "Use cache";
+			this.checkBoxCache.UseVisualStyleBackColor = true;
 			// 
 			// checkBoxAutoSync
 			// 
@@ -296,11 +312,31 @@ namespace FTPsync
 			this.FTPHost.Size = new System.Drawing.Size(187, 20);
 			this.FTPHost.TabIndex = 0;
 			// 
+			// tabHelp
+			// 
+			this.tabHelp.Controls.Add(this.richTextBox1);
+			this.tabHelp.Location = new System.Drawing.Point(4, 22);
+			this.tabHelp.Name = "tabHelp";
+			this.tabHelp.Padding = new System.Windows.Forms.Padding(3);
+			this.tabHelp.Size = new System.Drawing.Size(471, 211);
+			this.tabHelp.TabIndex = 3;
+			this.tabHelp.Text = "Help";
+			this.tabHelp.UseVisualStyleBackColor = true;
+			// 
+			// richTextBox1
+			// 
+			this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.richTextBox1.Location = new System.Drawing.Point(3, 3);
+			this.richTextBox1.Name = "richTextBox1";
+			this.richTextBox1.Size = new System.Drawing.Size(465, 205);
+			this.richTextBox1.TabIndex = 0;
+			this.richTextBox1.Text = "";
+			// 
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.statusStrip});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 242);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 268);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(479, 22);
 			this.statusStrip1.TabIndex = 2;
@@ -315,43 +351,34 @@ namespace FTPsync
 			// toolStrip1
 			// 
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.toolStripTurnOn,
-			this.toolStripTurnOff});
+			this.toolStripSwitchSync});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.Size = new System.Drawing.Size(479, 25);
 			this.toolStrip1.TabIndex = 3;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
-			// toolStripTurnOn
+			// toolStripSwitchSync
 			// 
-			this.toolStripTurnOn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripTurnOn.Image = ((System.Drawing.Image)(resources.GetObject("toolStripTurnOn.Image")));
-			this.toolStripTurnOn.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripTurnOn.Name = "toolStripTurnOn";
-			this.toolStripTurnOn.Size = new System.Drawing.Size(23, 22);
-			this.toolStripTurnOn.Text = "Turn on sync";
-			this.toolStripTurnOn.Click += new System.EventHandler(this.ToolStripTurnOnClick);
-			// 
-			// toolStripTurnOff
-			// 
-			this.toolStripTurnOff.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripTurnOff.Image = ((System.Drawing.Image)(resources.GetObject("toolStripTurnOff.Image")));
-			this.toolStripTurnOff.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripTurnOff.Name = "toolStripTurnOff";
-			this.toolStripTurnOff.Size = new System.Drawing.Size(23, 22);
-			this.toolStripTurnOff.Text = "Turn off sync";
+			this.toolStripSwitchSync.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripSwitchSync.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSwitchSync.Image")));
+			this.toolStripSwitchSync.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripSwitchSync.Name = "toolStripSwitchSync";
+			this.toolStripSwitchSync.Size = new System.Drawing.Size(23, 22);
+			this.toolStripSwitchSync.Text = "Turn on/off sync";
+			this.toolStripSwitchSync.Click += new System.EventHandler(this.ToolStripTurnOnClick);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(479, 264);
+			this.ClientSize = new System.Drawing.Size(479, 290);
 			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.tabControl);
 			this.Name = "MainForm";
 			this.Text = "FTPsync";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFormFormClosing);
 			this.tabControl.ResumeLayout(false);
 			this.tabStatus.ResumeLayout(false);
 			this.tabStatus.PerformLayout();
@@ -363,6 +390,7 @@ namespace FTPsync
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.FTPPort)).EndInit();
+			this.tabHelp.ResumeLayout(false);
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
 			this.toolStrip1.ResumeLayout(false);

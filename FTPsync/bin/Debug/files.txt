@@ -1,8 +1,0 @@
-drwxrwxr-x    3 1592663    www-data         4096 Feb  3 14:43 .
-drwxr-xr-x    9 1592663    www-data         4096 Feb  2 15:21 ..
--rw-rw-r--    1 1592663    www-data            0 Feb  2 15:19 admin.css
--rw-rw-r--    1 1592663    www-data         1932 Feb  3 14:43 db.txt
-drwxrwxr-x    2 1592663    www-data         4096 Feb  3 14:43 forms
--rw-rw-r--    1 1592663    www-data         1708 Feb  3 14:43 index.php
--rw-rw-r--    1 1592663    www-data          610 Feb  3 14:43 panel.php
-

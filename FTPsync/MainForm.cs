@@ -19,7 +19,6 @@ namespace FTPsync
 	/// <summary>
 	/// Description of MainForm.
 	/// </summary>
-	delegate void StringArgReturningVoidDelegate(string text);
 	
 	public partial class MainForm : Form
 	{
@@ -27,6 +26,10 @@ namespace FTPsync
 		private Dictionary<string, string> options;
 		private List<LocalFile> localFiles = new List<LocalFile>();
 		private List<RemoteFile> remoteFiles = new List<RemoteFile>();
+		private bool sync;
+		
+		private Thread thread;
+		private Thread watcher;
 		
 		public MainForm()
 		{
@@ -41,9 +44,36 @@ namespace FTPsync
 			
 			textBoxLocalFolder.Text = options["localFolder"];
 			TextBoxRemoteFolder.Text = options["remoteFolder"];
-			checkBoxAutoSync.Checked = bool.Parse(options["autoSync"]);		
+			checkBoxAutoSync.Checked = bool.Parse(options["autoSync"]);
+			checkBoxCache.Checked = bool.Parse(options["cache"]);
+
+			sync = false;
 		}
 		
+		void ButtonSaveClick(object sender, EventArgs e)
+		{
+			SaveFTPConnection();
+			LoadFTPConnection();
+		}
+
+		void ToolStripTurnOnClick(object sender, EventArgs e)
+		{
+			if(sync == false)
+			{
+				thread = new Thread(LoadFiles);
+				thread.Start();
+			}
+			else
+			{
+				if(thread != null)
+					thread.Abort();
+				if(watcher != null)
+					watcher.Abort();
+			}
+			
+			sync = !sync;
+			toolStripSwitchSync.Checked = !toolStripSwitchSync.Checked;
+		}
 		
 		void ButtonSelectLocalFolderClick(object sender, EventArgs e)
 		{
@@ -51,6 +81,19 @@ namespace FTPsync
 			if(dialog.ShowDialog() == DialogResult.OK)
 			{
 				textBoxLocalFolder.Text = dialog.SelectedPath;
+			}
+		}
+		
+		private void Log(string msg)
+		{
+			if(textBoxLog.InvokeRequired)
+			{
+				StringArgReturningVoidDelegate d = new StringArgReturningVoidDelegate(Log);  
+        		this.Invoke(d, new object[] { msg });  
+			}
+			else
+			{
+				textBoxLog.AppendText(msg + Environment.NewLine);
 			}
 		}
 		
@@ -62,34 +105,38 @@ namespace FTPsync
 			options["password"] = FTPPassword.Text;
 			options["localFolder"] = textBoxLocalFolder.Text;
 			options["remoteFolder"] = TextBoxRemoteFolder.Text;
+			options["autoSync"] = checkBoxAutoSync.Checked.ToString();
+			options["cache"] = checkBoxCache.Checked.ToString();
 		}
 		
-		void ButtonSaveClick(object sender, EventArgs e)
+		private void LoadFiles()
 		{
-			SaveFTPConnection();
-		}
-		
-		private void SaveFTPConnection()
-		{
-			try {
-				File.WriteAllLines("settings.ini", new string[]
-				                   {
-				                   	"# FTP connection",
-				                   	"host:"+FTPHost.Text,
-				                   	"port:"+FTPPort.Value.ToString(),
-				                   	"user:"+FTPUser.Text,
-				                   	"password:"+FTPPassword.Text,
-				                   	"",
-				                   	"# settings",
-				                   	"localFolder:"+textBoxLocalFolder.Text.Replace(':', ';'),
-				                   	"remoteFolder:"+TextBoxRemoteFolder.Text.Replace(':', ';'),
-				                   	"autoSync:"+checkBoxAutoSync.Checked.ToString()
-				                   }
-				);
-				statusStrip.Text = "Succesfully saved settings";
+			ClearStatus();
+			
+			if(bool.Parse(options["cache"]) == true)
+			{
+				if(TryLoadCache()) {
+					Log("Files loaded from cache");
+					Log("Local files loaded("+localFiles.Count+")");
+					Log("Remote files loaded("+remoteFiles.Count+")");
+					
+					watcher = new Thread(Watch);
+					watcher.Start();
+					
+					return;
+				}
 			}
-			catch(Exception ex) {
-				MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			
+			LoadLocalFiles(options["localFolder"]);
+			Log("Local files loaded("+localFiles.Count+")");
+			LoadRemoteFiles(options["remoteFolder"]);
+			Log("Remote files loaded("+remoteFiles.Count+")");
+			
+			watcher = new Thread(Watch);
+			watcher.Start();
+			
+			if(bool.Parse(options["cache"]) == true) {
+				SaveFilesLists();
 			}
 		}
 		
@@ -141,36 +188,138 @@ namespace FTPsync
 			}
 		}
 		
-		private void LoadFiles()
+		private void SaveFTPConnection()
 		{
-			LoadLocalFiles(options["localFolder"]);
-			Log("Local files loaded("+localFiles.Count+")");
-			LoadRemoteFiles(options["remoteFolder"]);
-			Log("Remote files loaded("+remoteFiles.Count+")");
+			try {
+				File.WriteAllLines("settings.ini", new string[]
+				                   {
+				                   	"# FTP connection",
+				                   	"host:"+FTPHost.Text,
+				                   	"port:"+FTPPort.Value.ToString(),
+				                   	"user:"+FTPUser.Text,
+				                   	"password:"+FTPPassword.Text,
+				                   	"",
+				                   	"# settings",
+				                   	"localFolder:"+textBoxLocalFolder.Text.Replace(':', ';'),
+				                   	"remoteFolder:"+TextBoxRemoteFolder.Text.Replace(':', ';'),
+				                   	"autoSync:"+checkBoxAutoSync.Checked.ToString(),
+				                   	"cache:"+checkBoxCache.Checked.ToString()
+				                   }
+				);
+				statusStrip.Text = "Succesfully saved settings";
+			}
+			catch(Exception ex) {
+				MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 		
-		void ToolStripTurnOnClick(object sender, EventArgs e)
+		private void SaveFilesLists()
 		{
-			Thread thread = new Thread(LoadFiles);
-			thread.Start();
+			File.WriteAllText(@"data\localFiles.txt", String.Empty);
+			File.WriteAllText(@"data\remoteFiles.txt", String.Empty);
+			
+			foreach(LocalFile file in localFiles)
+			{
+				File.AppendAllLines(@"data\localFiles.txt", new string[] {file.fileName+" "+file.fullPath+" "+file.lastEdited.ToString()});
+			}
 			
 			foreach(RemoteFile file in remoteFiles)
 			{
-				File.WriteAllLines("remote.txt", new string[] {file.fullPath+" "+file.lastEdited.ToString()});
+				File.AppendAllLines(@"data\remoteFiles.txt", new string[] {file.fileName+" "+file.fullPath+" "+file.lastEdited.ToString()});
 			}
 		}
 		
-		private void Log(string msg)
+		private bool TryLoadCache()
 		{
-			if(textBoxLog.InvokeRequired)
+			localFiles.Clear();
+			remoteFiles.Clear();
+			try {
+				foreach(string line in File.ReadAllLines("data/localFiles.txt"))
+				{
+					LocalFile file = new LocalFile();
+					string[] arr = line.Split(' ');
+					
+					file.fullPath = arr[0];
+					file.fileName = arr[1];
+					file.lastEdited = DateTime.Parse(arr[2]);
+					
+					localFiles.Add(file);
+				}
+				
+				foreach(string line in File.ReadAllLines("data/remoteFiles.txt"))
+				{
+					RemoteFile file = new RemoteFile();
+					string[] arr = line.Split(' ');
+					
+					file.fullPath = arr[0];
+					file.fileName = arr[1];
+					file.lastEdited = DateTime.Parse(arr[2]);
+					
+					remoteFiles.Add(file);
+				}
+			}
+			catch {
+				return false;
+			}
+			return true;
+		}
+		
+		private void Watch()
+		{
+			foreach(LocalFile local in localFiles)
 			{
-				StringArgReturningVoidDelegate d = new StringArgReturningVoidDelegate(Log);  
-        		this.Invoke(d, new object[] { msg });  
+				foreach(RemoteFile remote in remoteFiles)
+				{
+					if(local.lastEdited > remote.lastEdited)
+					{
+						AppendStatus(local.fullPath);
+					}
+				}
+			}
+			
+			Thread.Sleep(1000);
+			Watch();
+		}
+		
+		void MainFormFormClosing(object sender, FormClosingEventArgs e)
+		{
+			if(this.thread != null) {
+				thread.Abort();
+			}
+			if(this.watcher != null) {
+				watcher.Abort();
+			}
+		}
+		
+		private void ClearStatus()
+		{
+			if(textBoxStatus.InvokeRequired)
+			{
+				NoArgsReturningVoidDeletage d = new NoArgsReturningVoidDeletage(ClearStatus);  
+        		this.Invoke(d, new object[] {});  
 			}
 			else
 			{
-				textBoxLog.AppendText(msg + Environment.NewLine);
+				textBoxStatus.Clear();
+			}
+		}
+		
+		private void AppendStatus(string msg)
+		{
+			if(textBoxStatus.InvokeRequired)
+			{
+				StringArgReturningVoidDelegate d = new StringArgReturningVoidDelegate(AppendStatus);  
+        		this.Invoke(d, new object[] {});  
+			}
+			else
+			{
+				textBoxStatus.AppendText(msg + Environment.NewLine);
 			}
 		}
 	}
+	
+	
+	
+	delegate void StringArgReturningVoidDelegate(string text);
+	delegate void NoArgsReturningVoidDeletage();
 }
